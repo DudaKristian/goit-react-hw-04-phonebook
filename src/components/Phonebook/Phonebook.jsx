@@ -1,56 +1,52 @@
-import React from "react";
+import { useState } from "react";
 import shortId from "shortid";
 import PropTypes from 'prop-types';
 
-class Phonebook extends React.Component {
+const Phonebook = ({addContact}) => {
 
-    state = {
-    name: '',
-    number: '',
+    const [name, setName] = useState("");
+    const [number, setNumber] = useState("");
+
+    const nameInputId = shortId.generate();
+    const numberInputId = shortId.generate();
+
+    const onInputChange = e => {
+        
+        const { name, value } = e.target
+        
+        switch (name) {
+            case "name":
+                setName(value)
+                break;
+            case "number":
+                setNumber(value)
+                break;
+            default:
+                return;
+        }    
     }
-
-
-    nameInputId = shortId.generate();
-    numberInputId = shortId.generate();
-
-    onInputChange = e => {
-
-    const { name, value } = e.target;
-
-    this.setState({ [name]: value })  
-    }
     
-    formReset = () => {
-    
-    this.setState(
-      {
-        name: '',
-        number: '',
-      }
-    )
-    };
-    
-    onSubmitHandle = e => {
+    const onSubmitHandle = e => {
 
     e.preventDefault();
         
     const contact = {
-    name: this.state.name,
-    number: this.state.number,
+    name: name,
+    number: number,
     id: shortId.generate(),
     }
-    this.props.addContact(contact)
+    addContact(contact)
 
-    this.formReset()
+    setName("")
+    setNumber("")
 
     };
 
-    render() {
         return (
             <div>
             
-                <form onSubmit={this.onSubmitHandle}>
-                <label htmlFor={this.nameInputId}>
+                <form onSubmit={onSubmitHandle}>
+                <label htmlFor={nameInputId}>
                     Name
                     <input
                         type="text"
@@ -58,13 +54,13 @@ class Phonebook extends React.Component {
                         pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
                         title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
                         required
-                        value={this.state.name}
-                        onChange={this.onInputChange}
-                        id={this.nameInputId}
+                        value={name}
+                        onChange={onInputChange}
+                        id={nameInputId}
                     />
                 </label>
                 <br />
-                <label htmlFor={this.numberInputId}>
+                <label htmlFor={numberInputId}>
                     Number
                     <input
                         type="tel"
@@ -72,9 +68,9 @@ class Phonebook extends React.Component {
                         pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
                         title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
                         required
-                        value={this.state.number}
-                        id={this.numberInputId}
-                        onChange={this.onInputChange}
+                        value={number}
+                        id={numberInputId}
+                        onChange={onInputChange}
                     />
                 </label>
                 <br />
@@ -83,7 +79,6 @@ class Phonebook extends React.Component {
             </div>
         )       
     }
-}
 
 Phonebook.propTypes = {
     addContact: PropTypes.func.isRequired

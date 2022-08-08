@@ -1,79 +1,56 @@
-import React from "react"
+import {useState, useEffect} from "react"
 import ContactList from "./ContactList/ContactList";
 import Filter from "./Filter/Filter";
 import Phonebook from "./Phonebook/Phonebook";
 
 
-class App extends React.Component{
+const App = () => {
 
-  state = {
-    contacts: [],
-    filter: '',
-  }
-
-  onFilterChange = e => {
-    const { name, value } = e.target;
-
-    this.setState({ [name]: value })
-  };
+  const [contacts, setContacts] = useState(() =>{
+    return JSON.parse(window.localStorage.getItem("contacts")) ??
+      contacts.length !== 0
+  });
   
-  addContact = data => {
+  const [filter, setFilter] = useState("");
+
+  useEffect(() => { window.localStorage.setItem("contacts", JSON.stringify(contacts)) },
+  [contacts])
+
+  const addContact = data => {
     const contactName =
-      this.state.contacts.map(contact =>
+      contacts.map(contact =>
       contact.name.toLowerCase())
     if (!contactName.includes(data.name.toLowerCase())) {
-      this.setState(({ contacts }) => ({
-      contacts: [data, ...contacts],
-      }))
-    }
+      setContacts([data, ...contacts])
+      }
+    
     else {
       return alert(`${data.name} is allready in contacts`)
     } 
     
   };
 
-  filter = () => {
-    const { contacts, filter } = this.state;
+  const filterCheck = () => {
     const normalizedFilter = filter.toLowerCase();
     return contacts.filter(contact =>
       contact.name.toLowerCase().includes(normalizedFilter)
     );
-  };
-  
-  onDelete = id => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== id)
-    }))
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.contacts !== prevState.contacts) {
-    localStorage.setItem("contacts", JSON.stringify(this.state.contacts))
-  }
-  };
-
-  componentDidMount() {
-    
-    const parsedContacts = JSON.parse(localStorage.getItem("contacts"))
-    if (parsedContacts) {
-      this.setState({ contacts: parsedContacts })
+  const onDelete = id => {
+    setContacts(contacts.filter(contact => contact.id !== id))
     }
-    
-  }
+  
 
-  render() {
-    const filter = this.filter();
-    
-    return (
+return (
       <div>
         <h1>Phonebook</h1>
-        <Phonebook addContact={this.addContact} />
+        <Phonebook addContact={addContact} />
         <h2>Contacts</h2>
-        <Filter onChange={this.onFilterChange} filter={this.state.filter} />
-        <ContactList filter={filter} onDelete={this.onDelete} />
+        <Filter onChange={e => setFilter(e.target.value)} filter={filter} />
+        <ContactList filter={filterCheck()} onDelete={onDelete} />
       </div>
     )
-  }
 }
 
 export default App
