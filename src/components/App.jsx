@@ -7,8 +7,7 @@ import Phonebook from "./Phonebook/Phonebook";
 const App = () => {
 
   const [contacts, setContacts] = useState(() =>{
-    return JSON.parse(window.localStorage.getItem("contacts")) ??
-      contacts.length !== 0
+    return JSON.parse(window.localStorage.getItem("contacts")) ?? contacts
   });
   
   const [filter, setFilter] = useState("");
