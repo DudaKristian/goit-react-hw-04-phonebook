@@ -3,12 +3,13 @@ import ContactList from "./ContactList/ContactList";
 import Filter from "./Filter/Filter";
 import Phonebook from "./Phonebook/Phonebook";
 
-
 const App = () => {
 
-  const [contacts, setContacts] = useState(() =>{
-    return JSON.parse(window.localStorage.getItem("contacts")) ?? contacts
-  });
+  const [contacts, setContacts] = useState(() => {
+    if (window.localStorage.getItem("contacts")) { 
+    return JSON.parse(window.localStorage.getItem("contacts"))
+  } else {return []}
+});
   
   const [filter, setFilter] = useState("");
 
